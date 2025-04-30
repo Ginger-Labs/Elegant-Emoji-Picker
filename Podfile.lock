@@ -1,3 +1,16 @@
-PODFILE CHECKSUM: b7c6ee9eafe6da0ec24b85e584efe5d22b566f35
+PODS:
+  - ElegantEmojiPicker (1.0)
+
+DEPENDENCIES:
+  - ElegantEmojiPicker (from `.`)
+
+EXTERNAL SOURCES:
+  ElegantEmojiPicker:
+    :path: "."
+
+SPEC CHECKSUMS:
+  ElegantEmojiPicker: 1e1943cc332c227bccce7759b42a123ef8c1fa64
+
+PODFILE CHECKSUM: 62f8694cbe47a68d0c242d6fa0989bb8bd9ff63b
 
 COCOAPODS: 1.16.2
