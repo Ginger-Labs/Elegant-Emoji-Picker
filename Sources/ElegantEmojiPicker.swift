@@ -9,8 +9,6 @@ import Foundation
 import UIKit
 import SwiftUI
 
-/// Present this view controller when you want to offer users emoji selection. Conform to its delegate ElegantEmojiPickerDelegate and pass it to the view controller to interact with it and receive user's selection.
-///
 public struct EmojiPickerView: UIViewControllerRepresentable {
     @Binding public var emojiString: String?
     
@@ -40,9 +38,10 @@ public struct EmojiPickerView: UIViewControllerRepresentable {
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
     }
-    
 }
 
+/// Present this view controller when you want to offer users emoji selection. Conform to its delegate ElegantEmojiPickerDelegate and pass it to the view controller to interact with it and receive user's selection.
+///
 open class ElegantEmojiPicker: UIViewController {
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
@@ -77,7 +76,6 @@ open class ElegantEmojiPicker: UIViewController {
     var skinToneSelector: SkinToneSelector?
     var emojiPreview: EmojiPreview?
     public var previewingEmoji: Emoji?
-    public var previewingEmojiString: String?
     
     var emojiSections = [EmojiSection]()
     var searchResults: [Emoji]?
@@ -231,9 +229,6 @@ open class ElegantEmojiPicker: UIViewController {
     
     func didSelectEmoji (_ emoji: Emoji?) {
         delegate?.emojiPicker(self, didSelectEmoji: emoji)
-        previewingEmoji = emoji
-        previewingEmojiString = emoji?.emoji
-//        if delegate?.emojiPickerShouldDismissAfterSelection(self) ?? true { self.dismiss(animated: true) }
     }
 }
 

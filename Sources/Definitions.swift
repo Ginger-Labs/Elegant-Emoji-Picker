@@ -10,26 +10,6 @@ import UIKit
 import CoreText
 
 /// Struct representing a single emoji
-public extension Bundle {
-    static func moduleBundle(named name: String, for cls: AnyClass) -> Bundle {
-        let bundle = Bundle(for: cls)
-
-        guard let path = bundle.path(forResource: name, ofType: "bundle") else {
-            return bundle
-        }
-
-        return Bundle(path: path) ?? bundle
-    }
-}
-
-internal extension Bundle {
-    static var moduleBundle: Bundle {
-        return self.moduleBundle(named: "GLCore", for: BundleToken.self)
-    }
-}
-
-private final class BundleToken {}
-
 public struct Emoji: Decodable, Equatable {
     public let emoji: String
     public let description: String
@@ -171,8 +151,10 @@ public enum EmojiCategory: String, CaseIterable, Decodable {
     
     public var image: UIImage? {
         switch self {
-        case .PeopleAndBody: return UIImage(systemName: "hand.wave", withConfiguration: UIImage.SymbolConfiguration(weight: .medium))?.withRenderingMode(.alwaysTemplate)
-        default: return UIImage(named: self.rawValue, in: .moduleBundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+        case .PeopleAndBody:
+            return UIImage(systemName: "hand.wave", withConfiguration: UIImage.SymbolConfiguration(weight: .medium))?.withRenderingMode(.alwaysTemplate)
+        default:
+            return UIImage(named: self.rawValue, in: .moduleBundle, with: nil)?.withRenderingMode(.alwaysTemplate)
         }
     }
     
