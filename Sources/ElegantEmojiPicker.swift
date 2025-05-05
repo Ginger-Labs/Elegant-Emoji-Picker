@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import SwiftUI
+import UIKit
 
 public struct EmojiPickerView: UIViewControllerRepresentable {
     @Binding public var emojiString: String?
@@ -24,7 +24,7 @@ public struct EmojiPickerView: UIViewControllerRepresentable {
         }
         
         public func emojiPicker(_ picker: ElegantEmojiPicker, didSelectEmoji emoji: Emoji?) {
-            parent.emojiString = emoji?.emoji ?? ""
+            parent.emojiString = emoji?.emoji ?? nil
         }
     }
     
@@ -41,7 +41,6 @@ public struct EmojiPickerView: UIViewControllerRepresentable {
 }
 
 /// Present this view controller when you want to offer users emoji selection. Conform to its delegate ElegantEmojiPickerDelegate and pass it to the view controller to interact with it and receive user's selection.
-///
 open class ElegantEmojiPicker: UIViewController {
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
@@ -102,7 +101,7 @@ open class ElegantEmojiPicker: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         self.emojiSections = self.delegate?.emojiPicker(self, loadEmojiSections: config, localization) ?? ElegantEmojiPicker.getDefaultEmojiSections(config: config, localization: localization)
-
+        
         if let sourceView = sourceView, !AppConfiguration.isIPhone, AppConfiguration.windowFrame.width > 500 {
             self.modalPresentationStyle = .popover
             self.popoverPresentationController?.sourceView = sourceView
@@ -116,9 +115,8 @@ open class ElegantEmojiPicker: UIViewController {
                 self.sheetPresentationController?.detents = [.medium(), .large()]
             }
         }
-
+        
         self.presentationController?.delegate = self
-
         if config.showSearch {
             searchFieldBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
             searchFieldBackground!.layer.cornerRadius = 8
@@ -514,6 +512,7 @@ extension ElegantEmojiPicker: UIAdaptivePresentationControllerDelegate {
         return .none // Do not adapt presentation style. We set the presentation style manually in our init(). I know better than Apple.
     }
 }
+
 
 //MARK: Static methods
 
