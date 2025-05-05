@@ -47,6 +47,7 @@ open class ElegantEmojiPicker: UIViewController {
     public weak var delegate: ElegantEmojiPickerDelegate?
     public let config: ElegantConfiguration
     public let localization: ElegantLocalization
+    @Environment(\.locale) private var locale
     
     let padding = 16.0
     let topElementHeight = 40.0
@@ -117,7 +118,9 @@ open class ElegantEmojiPicker: UIViewController {
         }
         
         self.presentationController?.delegate = self
-        if config.showSearch {
+        if config.showSearch && Locale.current.language.languageCode?.identifier == "en" {
+            searchFieldBackground = UIVisualEffectView()
+            searchFieldBackground?.backgroundColor = .systemBackground
             searchFieldBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
             searchFieldBackground!.layer.cornerRadius = 8
             searchFieldBackground!.clipsToBounds = true
@@ -222,12 +225,12 @@ open class ElegantEmojiPicker: UIViewController {
     
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        collectionLayout.headerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
+        collectionLayout.headerReferenceSize = Locale.current.language.languageCode?.identifier == "en" ? CGSize(width: collectionView.frame.width, height: 50) : .zero
         fadeContainer.layer.mask?.frame = fadeContainer.bounds
     }
     
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        self.view.backgroundColor = UIScreen.main.traitCollection.userInterfaceStyle == .light ? .black.withAlphaComponent(0.1) : .clear
+        self.view.backgroundColor = .clear
     }
     
     @objc func TappedClose () {
