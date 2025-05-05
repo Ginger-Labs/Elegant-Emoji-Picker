@@ -52,6 +52,8 @@ open class ElegantEmojiPicker: UIViewController {
     let padding = 16.0
     let topElementHeight = 40.0
     
+    let backgroundBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+
     var searchFieldBackground: UIVisualEffectView?
     var searchField: UITextField?
     var clearButton: UIButton?
@@ -100,7 +102,23 @@ open class ElegantEmojiPicker: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         self.emojiSections = self.delegate?.emojiPicker(self, loadEmojiSections: config, localization) ?? ElegantEmojiPicker.getDefaultEmojiSections(config: config, localization: localization)
-                
+
+        if let sourceView = sourceView, !AppConfiguration.isIPhone, AppConfiguration.windowFrame.width > 500 {
+            self.modalPresentationStyle = .popover
+            self.popoverPresentationController?.sourceView = sourceView
+        } else if let sourceNavigationBarButton = sourceNavigationBarButton, !AppConfiguration.isIPhone, AppConfiguration.windowFrame.width > 500 {
+            self.modalPresentationStyle = .popover
+            self.popoverPresentationController?.barButtonItem = sourceNavigationBarButton
+        } else {
+            self.modalPresentationStyle = .formSheet
+            if #available(iOS 15.0, *) {
+                self.sheetPresentationController?.prefersGrabberVisible = true
+                self.sheetPresentationController?.detents = [.medium(), .large()]
+            }
+        }
+
+        self.presentationController?.delegate = self
+
         if config.showSearch {
             searchFieldBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
             searchFieldBackground!.layer.cornerRadius = 8
@@ -491,6 +509,11 @@ extension ElegantEmojiPicker {
     }
 }
 
+extension ElegantEmojiPicker: UIAdaptivePresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Do not adapt presentation style. We set the presentation style manually in our init(). I know better than Apple.
+    }
+}
 
 //MARK: Static methods
 
