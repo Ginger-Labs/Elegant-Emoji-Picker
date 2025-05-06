@@ -6,6 +6,7 @@ install! 'cocoapods', :share_schemes_for_development_pods => ['ElegantEmojiPicke
 target 'Demo' do
     use_frameworks!
     platform :ios, '16.0'
+    pod 'ElegantEmojiPicker', :path => '.'
 end
 
 post_install do |installer|

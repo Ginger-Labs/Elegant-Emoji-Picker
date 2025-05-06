@@ -6,9 +6,41 @@
 //
 
 import Foundation
+import SwiftUI
 import UIKit
 
-/// Present this view controller when you want to offer users emoji selection. Conform to its delegate ElegantEmojiPickerDelegate and pass it to the view controller to interact with it and receive user's selection. 
+public struct EmojiPickerView: UIViewControllerRepresentable {
+    @Binding public var emojiString: String?
+    
+    public init(emojiString: Binding<String?>) {
+        self._emojiString = emojiString
+    }
+    
+    public class Coordinator: NSObject, ElegantEmojiPickerDelegate {
+        let parent: EmojiPickerView
+        
+        init(parent: EmojiPickerView) {
+            self.parent = parent
+        }
+        
+        public func emojiPicker(_ picker: ElegantEmojiPicker, didSelectEmoji emoji: Emoji?) {
+            parent.emojiString = emoji?.emoji
+        }
+    }
+    
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    public func makeUIViewController(context: Context) -> ElegantEmojiPicker {
+        ElegantEmojiPicker(delegate: context.coordinator, configuration: ElegantConfiguration(showRandom: false, showReset: false, showClose: false), localization: .init())
+    }
+
+    public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+    }
+}
+
+/// Present this view controller when you want to offer users emoji selection. Conform to its delegate ElegantEmojiPickerDelegate and pass it to the view controller to interact with it and receive user's selection.
 open class ElegantEmojiPicker: UIViewController {
     required public init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
@@ -85,9 +117,6 @@ open class ElegantEmojiPicker: UIViewController {
         }
         
         self.presentationController?.delegate = self
-        
-        self.view.addSubview(backgroundBlur, anchors: LayoutAnchor.fullFrame)
-        
         if config.showSearch {
             searchFieldBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
             searchFieldBackground!.layer.cornerRadius = 8
@@ -216,7 +245,6 @@ open class ElegantEmojiPicker: UIViewController {
     
     func didSelectEmoji (_ emoji: Emoji?) {
         delegate?.emojiPicker(self, didSelectEmoji: emoji)
-        if delegate?.emojiPickerShouldDismissAfterSelection(self) ?? true { self.dismiss(animated: true) }
     }
 }
 
@@ -512,7 +540,7 @@ extension ElegantEmojiPicker {
     /// Returns an array of all available emojis. Use this method to retrieve emojis for your own collection.
     /// - Returns: Array of all emojis.
     static public func getAllEmoji () -> [Emoji] {
-        let emojiData = (try? Data(contentsOf: Bundle.module.url(forResource: "Emoji Unicode 16.0", withExtension: "json")!))!
+        let emojiData = (try? Data(contentsOf: Bundle.moduleBundle.url(forResource: "Emoji Unicode 16.0", withExtension: "json")!))!
         return try! JSONDecoder().decode([Emoji].self, from: emojiData)
     }
     
