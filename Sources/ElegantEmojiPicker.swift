@@ -24,7 +24,7 @@ public struct EmojiPickerView: UIViewControllerRepresentable {
         }
         
         public func emojiPicker(_ picker: ElegantEmojiPicker, didSelectEmoji emoji: Emoji?) {
-            parent.emojiString = emoji?.emoji ?? nil
+            parent.emojiString = emoji?.emoji
         }
     }
     
