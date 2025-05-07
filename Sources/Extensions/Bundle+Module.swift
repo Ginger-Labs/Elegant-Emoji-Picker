@@ -4,6 +4,8 @@
 //
 //  Created by Lakshya Nagal on 5/2/25.
 //
+import Foundation
+
 public extension Bundle {
     static func moduleBundle(named name: String, for cls: AnyClass) -> Bundle {
         let bundle = Bundle(for: cls)
