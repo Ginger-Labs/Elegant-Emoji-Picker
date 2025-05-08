@@ -134,7 +134,7 @@ open class ElegantEmojiPicker: UIViewController {
             searchFieldBackground?.backgroundColor = searchFieldBackgroundColor
             searchFieldBackground!.layer.cornerRadius = 8
             searchFieldBackground?.layer.borderWidth = 1
-            searchFieldBackground?.layer.borderColor = searchFieldBorderColor?.withAlphaComponent(0.6).cgColor
+            searchFieldBackground?.layer.borderColor = searchFieldBorderColor?.cgColor
             searchFieldBackground!.clipsToBounds = true
             searchFieldBackground!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TappedSearchBackground)))
             self.view.addSubview(searchFieldBackground!, anchors: [.safeAreaLeading(padding), .safeAreaTop(padding*1.5), .height(topElementHeight)])
