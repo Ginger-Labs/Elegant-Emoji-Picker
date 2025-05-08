@@ -11,9 +11,17 @@ import UIKit
 
 public struct EmojiPickerView: UIViewControllerRepresentable {
     @Binding public var emojiString: String?
+    public var showSearch: Bool
+    public var showCategories: Bool
+    public var searchFieldBackgroundColor: UIColor?
+    public var searchFieldBorderColor: UIColor?
     
-    public init(emojiString: Binding<String?>) {
+    public init(emojiString: Binding<String?>, showSearch: Bool, showCategories: Bool, searchFieldBackgroundColor: UIColor, searchFieldBorderColor: UIColor) {
         self._emojiString = emojiString
+        self.showSearch = showSearch
+        self.showCategories = showCategories
+        self.searchFieldBackgroundColor = searchFieldBackgroundColor
+        self.searchFieldBorderColor = searchFieldBorderColor
     }
     
     public class Coordinator: NSObject, ElegantEmojiPickerDelegate {
@@ -33,7 +41,7 @@ public struct EmojiPickerView: UIViewControllerRepresentable {
     }
 
     public func makeUIViewController(context: Context) -> ElegantEmojiPicker {
-        ElegantEmojiPicker(delegate: context.coordinator, configuration: ElegantConfiguration(showRandom: false, showReset: false, showClose: false), localization: .init())
+        ElegantEmojiPicker(delegate: context.coordinator, configuration: ElegantConfiguration(showSearch: showSearch, showRandom: false, showReset: false, showClose: false), localization: .init(), showCategories: showCategories, searchFieldBackgroundColor: searchFieldBackgroundColor, searchFieldBorderColor: searchFieldBorderColor)
     }
 
     public func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
@@ -47,6 +55,9 @@ open class ElegantEmojiPicker: UIViewController {
     public weak var delegate: ElegantEmojiPickerDelegate?
     public let config: ElegantConfiguration
     public let localization: ElegantLocalization
+    public var showCategories: Bool
+    public var searchFieldBackgroundColor: UIColor?
+    public var searchFieldBorderColor: UIColor?
     
     let padding = 16.0
     let topElementHeight = 40.0
@@ -94,10 +105,11 @@ open class ElegantEmojiPicker: UIViewController {
     ///   - localization: provide a localization to change texts on all labels
     ///   - sourceView: provide a source view for a popover presentation style.
     ///   - sourceNavigationBarButton: provide a source navigation bar button for a popover presentation style.
-    public init (delegate: ElegantEmojiPickerDelegate? = nil, configuration: ElegantConfiguration = ElegantConfiguration(), localization: ElegantLocalization = ElegantLocalization(), sourceView: UIView? = nil, sourceNavigationBarButton: UIBarButtonItem? = nil) {
+    public init (delegate: ElegantEmojiPickerDelegate? = nil, configuration: ElegantConfiguration = ElegantConfiguration(), localization: ElegantLocalization = ElegantLocalization(), showCategories: Bool = false, searchFieldBackgroundColor: UIColor? = nil, searchFieldBorderColor: UIColor? = nil, sourceView: UIView? = nil, sourceNavigationBarButton: UIBarButtonItem? = nil) {
         self.delegate = delegate
         self.config = configuration
         self.localization = localization
+        self.showCategories = showCategories
         super.init(nibName: nil, bundle: nil)
         
         self.emojiSections = self.delegate?.emojiPicker(self, loadEmojiSections: config, localization) ?? ElegantEmojiPicker.getDefaultEmojiSections(config: config, localization: localization)
@@ -118,8 +130,11 @@ open class ElegantEmojiPicker: UIViewController {
         
         self.presentationController?.delegate = self
         if config.showSearch {
-            searchFieldBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+            searchFieldBackground = UIVisualEffectView()
+            searchFieldBackground?.backgroundColor = searchFieldBackgroundColor
             searchFieldBackground!.layer.cornerRadius = 8
+            searchFieldBackground?.layer.borderWidth = 1
+            searchFieldBackground?.layer.borderColor = searchFieldBorderColor?.cgColor
             searchFieldBackground!.clipsToBounds = true
             searchFieldBackground!.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(TappedSearchBackground)))
             self.view.addSubview(searchFieldBackground!, anchors: [.safeAreaLeading(padding), .safeAreaTop(padding*1.5), .height(topElementHeight)])
@@ -222,12 +237,8 @@ open class ElegantEmojiPicker: UIViewController {
     
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        collectionLayout.headerReferenceSize = CGSize(width: collectionView.frame.width, height: 50)
+        collectionLayout.headerReferenceSize = showCategories ? CGSize(width: collectionView.frame.width, height: 50) : .zero
         fadeContainer.layer.mask?.frame = fadeContainer.bounds
-    }
-    
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        self.view.backgroundColor = UIScreen.main.traitCollection.userInterfaceStyle == .light ? .black.withAlphaComponent(0.1) : .clear
     }
     
     @objc func TappedClose () {
